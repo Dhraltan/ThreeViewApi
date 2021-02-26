@@ -1,5 +1,6 @@
 import express from "express";
 import bodyParser from 'body-parser';
+import 'reflect-metadata';
 // import pool from './dbconfig/dbconnector';
 
 class Server{
