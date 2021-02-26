@@ -1,5 +1,4 @@
 import {
-  AfterLoad,
   Column,
   CreateDateColumn,
   Entity,
@@ -9,7 +8,6 @@ import {
 
 @Entity()
 export class User {
-
   @PrimaryGeneratedColumn()
   id!: number;
 
@@ -20,5 +18,11 @@ export class User {
   updatedAt!: Date;
 
   @Column({ length: 256 })
-  name!: string;
+  firstName!: string;
+
+  @Column({ length: 256 })
+  lastName!: string;
+
+  @Column({ length: 50, unique: true })
+  email!: string;
 }
