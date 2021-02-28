@@ -7,4 +7,10 @@ export const AppRoutes = [
     controller: UserController,
     action: "save",
   },
+  {
+    method: "get",
+    route: "/users",
+    controller: UserController,
+    action: "one",
+  },
 ];
