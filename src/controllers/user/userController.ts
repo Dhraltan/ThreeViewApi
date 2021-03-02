@@ -3,18 +3,29 @@ import { getRepository } from "typeorm";
 import { NextFunction, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import HttpException from "../../middlewares/exceptions/HttpException";
+import { UserDTO } from "../../DTOs/UserDTO";
+import { LoginDTO } from "../../DTOs/LoginDTO";
 
 export class UserController {
   private userRepository = getRepository(User);
 
-  async one(request: Request, response: Response, next: NextFunction) {
-    if (!request.query.email) {
-      return request.next(new HttpException(400, "Bad Request"));
-    }
+  async login(request: Request, response: Response, next: NextFunction) {
+    const loginData: LoginDTO = request.body;
     await this.userRepository
-      .findOneOrFail({ where: { email: request.query.email } })
-      .then((user) => {
-        return response.send(user);
+      .findOneOrFail({ where: { email: request.body.email } })
+      .then(async (user) => {
+        const isPasswordMatching = await bcrypt.compare(
+          loginData.password,
+          user.password
+        );
+        if (isPasswordMatching) {
+          user.password = null;
+          return response.send(user);
+        } else {
+          return request.next(
+            new HttpException(401, "Password doesn't match!")
+          );
+        }
       })
       .catch((err) => {
         if ((err.name = "EntityNotFound")) {
@@ -28,7 +39,7 @@ export class UserController {
   }
 
   async register(request: Request, response: Response, next: NextFunction) {
-    const userData: User = request.body;
+    const userData: UserDTO = request.body;
     const hashedPassword = await bcrypt.hash(userData.password, 10);
     await this.userRepository
       .save({
@@ -58,10 +69,5 @@ export class UserController {
           return request.next(new HttpException(500, err.detail));
         }
       });
-  }
-
-  async remove(request: Request, response: Response, next: NextFunction) {
-    let userToRemove = await this.userRepository.findOne(request.params.id);
-    await this.userRepository.remove(userToRemove);
   }
 }
