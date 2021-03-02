@@ -5,12 +5,14 @@ import bcrypt from "bcrypt";
 import HttpException from "../../middlewares/exceptions/HttpException";
 import { UserDTO } from "../../DTOs/UserDTO";
 import { LoginDTO } from "../../DTOs/LoginDTO";
+import { jwtToken } from "../../utils/jwtToken.util";
 
 export class UserController {
   private userRepository = getRepository(User);
 
   async login(request: Request, response: Response, next: NextFunction) {
     const loginData: LoginDTO = request.body;
+    console.log(request.signedCookies)
     await this.userRepository
       .findOneOrFail({ where: { email: request.body.email } })
       .then(async (user) => {
@@ -20,6 +22,8 @@ export class UserController {
         );
         if (isPasswordMatching) {
           user.password = null;
+          const tokenData = jwtToken.createToken(user);
+          response.setHeader('Set-Cookie', [jwtToken.createCookie(tokenData)]);
           return response.send(user);
         } else {
           return request.next(
@@ -48,6 +52,8 @@ export class UserController {
       })
       .then((result) => {
         result.password = null;
+        const tokenData = jwtToken.createToken(result);
+        response.setHeader('Set-Cookie', [jwtToken.createCookie(tokenData)]);
         return response.status(200).send(result);
       })
       .catch((err) => {

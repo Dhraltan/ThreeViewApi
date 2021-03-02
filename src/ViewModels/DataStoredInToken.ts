@@ -1,0 +1,3 @@
+interface DataStoredInToken {
+  id: string;
+}
