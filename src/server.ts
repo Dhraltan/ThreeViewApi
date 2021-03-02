@@ -4,16 +4,16 @@ import express from "express";
 import errorMiddleware from "./middlewares/exceptions/error.middleware";
 import cookieParser from "cookie-parser";
 import { createConnection } from "typeorm";
-import { AppRoutes } from "./routes";
-import { Request, Response } from "express";
 import { ormConfig } from "./ormconfig";
-import tokenMiddleware from "./middlewares/tokenAuth/token.middleware";
+import { router as userRouter } from "./routers/user.router";
+import { router as authRouter } from "./routers/auth.router";
 
 const app = express();
 const port = process.env.SERVER_PORT;
 
 async function init() {
   await createConnection(ormConfig);
+
 
   app.use(express.json());
   app.use(cookieParser());
@@ -22,23 +22,14 @@ async function init() {
     res.setHeader("access-control-allow-origin", "*");
     next();
   });
+  
+  await app.listen(port);
 
-  AppRoutes.forEach(async (route) => {
-    (app as any)[route.method](
-      route.route,
-      async (request: Request, response: Response, next: Function) => {
-        route.middleware;
-        (new route.controller() as any)
-          [route.action](request, response)
-          .then(() => next)
-          .catch((err: any) => next(err));
-      }
-    );
-  });
+  app.use(userRouter);
+  app.use(authRouter);
 
   app.use(errorMiddleware);
 
-  await app.listen(port);
 }
 
 init().then(() => {

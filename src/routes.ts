@@ -5,19 +5,25 @@ import tokenMiddleware from "./middlewares/tokenAuth/token.middleware";
 export const AppRoutes = [
   {
     method: "post",
-    route: "/auth/register",
+    route: "/api/auth/register",
     controller: AuthController,
     action: "register",
   },
   {
     method: "post",
-    route: "/auth/login",
+    route: "/api/auth/login",
     controller: AuthController,
     action: "login",
   },
   {
     method: "get",
-    route: "/user",
+    route: "/api/auth/logout",
+    controller: AuthController,
+    action: "logout",
+  },
+  {
+    method: "get",
+    route: "/api/user",
     controller: UserController,
     action: "getUserInfo",
     middleware: tokenMiddleware

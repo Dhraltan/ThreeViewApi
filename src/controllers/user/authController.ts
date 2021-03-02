@@ -8,12 +8,10 @@ import { LoginDTO } from "../../interfaces/DTOs/LoginDTO";
 import { jwtToken } from "../../utils/jwtToken.util";
 
 export class AuthController {
-  private userRepository = getRepository(User);
-
   async login(request: Request, response: Response, next: NextFunction) {
+    const userRepository = getRepository(User);
     const loginData: LoginDTO = request.body;
-    console.log(request.cookies)
-    await this.userRepository
+    await userRepository
       .findOneOrFail({ where: { email: request.body.email } })
       .then(async (user) => {
         const isPasswordMatching = await bcrypt.compare(
@@ -23,7 +21,7 @@ export class AuthController {
         if (isPasswordMatching) {
           user.password = null;
           const tokenData = jwtToken.createToken(user);
-          response.setHeader('Set-Cookie', [jwtToken.createCookie(tokenData)]);
+          response.setHeader("Set-Cookie", [jwtToken.createCookie(tokenData)]);
           return response.send(user);
         } else {
           return request.next(
@@ -34,7 +32,7 @@ export class AuthController {
       .catch((err) => {
         if ((err.name = "EntityNotFound")) {
           return request.next(
-            new HttpException(401, "Email is not registered!")
+            new HttpException(401, "The entity was not found!")
           );
         } else {
           return request.next(new HttpException(400, "Bad Request"));
@@ -43,9 +41,10 @@ export class AuthController {
   }
 
   async register(request: Request, response: Response, next: NextFunction) {
+    const userRepository = getRepository(User);
     const userData: UserDTO = request.body;
     const hashedPassword = await bcrypt.hash(userData.password, 10);
-    await this.userRepository
+    await userRepository
       .save({
         ...request.body,
         password: hashedPassword,
@@ -53,7 +52,7 @@ export class AuthController {
       .then((result) => {
         result.password = null;
         const tokenData = jwtToken.createToken(result);
-        response.setHeader('Set-Cookie', [jwtToken.createCookie(tokenData)]);
+        response.setHeader("Set-Cookie", [jwtToken.createCookie(tokenData)]);
         return response.status(200).send(result);
       })
       .catch((err) => {
@@ -75,5 +74,10 @@ export class AuthController {
           return request.next(new HttpException(500, err.detail));
         }
       });
+  }
+
+  async logout(request: Request, response: Response, next: NextFunction) {
+    response.setHeader("Set-Cookie", ["Authorization=;Max-age=0;Path=/api"]);
+    response.sendStatus(200);
   }
 }
