@@ -23,6 +23,9 @@ export class User {
   @Column({ length: 256 })
   lastName!: string;
 
-  @Column({ length: 50, unique: true })
+  @Column({ length: 64, unique: true })
   email!: string;
+
+  @Column({ length: 64 })
+  password!: string;
 }

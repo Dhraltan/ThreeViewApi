@@ -1,14 +1,11 @@
 import { User } from "../../entities/User";
 import { getRepository } from "typeorm";
 import { NextFunction, Request, Response } from "express";
+import bcrypt from "bcrypt";
 import HttpException from "../../middlewares/exceptions/HttpException";
 
 export class UserController {
   private userRepository = getRepository(User);
-
-  async all(request: Request, response: Response, next: NextFunction) {
-    return this.userRepository.find();
-  }
 
   async one(request: Request, response: Response, next: NextFunction) {
     if (!request.query.email) {
@@ -30,11 +27,16 @@ export class UserController {
       });
   }
 
-  async save(request: Request, response: Response, next: NextFunction) {
-    const user = this.userRepository.create(request.body);
+  async register(request: Request, response: Response, next: NextFunction) {
+    const userData: User = request.body;
+    const hashedPassword = await bcrypt.hash(userData.password, 10);
     await this.userRepository
-      .save(user)
+      .save({
+        ...request.body,
+        password: hashedPassword,
+      })
       .then((result) => {
+        result.password = null;
         return response.status(200).send(result);
       })
       .catch((err) => {

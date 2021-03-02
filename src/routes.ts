@@ -3,13 +3,13 @@ import { UserController } from "./controllers/user/userController";
 export const AppRoutes = [
   {
     method: "post",
-    route: "/users",
+    route: "/auth",
     controller: UserController,
-    action: "save",
+    action: "register",
   },
   {
     method: "get",
-    route: "/users",
+    route: "/auth",
     controller: UserController,
     action: "one",
   },

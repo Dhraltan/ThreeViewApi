@@ -4,7 +4,7 @@ import express from "express";
 import { AppRoutes } from "./routes";
 import { Request, Response } from "express";
 import { ormConfig } from "./ormconfig";
-import 'dotenv/config';
+import "dotenv/config";
 import errorMiddleware from "./middlewares/exceptions/error.middleware";
 
 const app = express();
@@ -20,8 +20,6 @@ app.use("*", async (req, res, next) => {
 async function init() {
   await createConnection(ormConfig);
 
-  
-
   AppRoutes.forEach(async (route) => {
     (app as any)[route.method](
       route.route,
@@ -34,8 +32,7 @@ async function init() {
     );
   });
 
-  
-app.use(errorMiddleware);
+  app.use(errorMiddleware);
 
   await app.listen(port);
 }
