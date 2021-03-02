@@ -1,35 +1,27 @@
 import { User } from "../../entities/User";
 import { getRepository } from "typeorm";
-import { NextFunction, Request, Response } from "express";
+import { NextFunction,Request,Response } from "express";
+import { LoginDTO } from "../../interfaces/DTOs/LoginDTO";
 import bcrypt from "bcrypt";
-import HttpException from "../../middlewares/exceptions/HttpException";
-import { UserDTO } from "../../DTOs/UserDTO";
-import { LoginDTO } from "../../DTOs/LoginDTO";
 import { jwtToken } from "../../utils/jwtToken.util";
+import HttpException from "../../middlewares/exceptions/HttpException";
+import jwt from "jsonwebtoken";
 
 export class UserController {
   private userRepository = getRepository(User);
 
-  async login(request: Request, response: Response, next: NextFunction) {
-    const loginData: LoginDTO = request.body;
-    console.log(request.signedCookies)
+  async getUserInfo(request: Request, response: Response, next: NextFunction) {
+    
+  const jwtToken = request.cookies.Authorization;
+  const secret = process.env.JWT_SECRET;
+  console.log(request.cookies)
+  const verificationResponse = jwt.verify(jwtToken, secret) as DataStoredInToken;
     await this.userRepository
-      .findOneOrFail({ where: { email: request.body.email } })
+      .findOneOrFail({ where: { email: verificationResponse.email} })
       .then(async (user) => {
-        const isPasswordMatching = await bcrypt.compare(
-          loginData.password,
-          user.password
-        );
-        if (isPasswordMatching) {
           user.password = null;
-          const tokenData = jwtToken.createToken(user);
-          response.setHeader('Set-Cookie', [jwtToken.createCookie(tokenData)]);
           return response.send(user);
-        } else {
-          return request.next(
-            new HttpException(401, "Password doesn't match!")
-          );
-        }
+        
       })
       .catch((err) => {
         if ((err.name = "EntityNotFound")) {
@@ -38,41 +30,6 @@ export class UserController {
           );
         } else {
           return request.next(new HttpException(400, "Bad Request"));
-        }
-      });
-  }
-
-  async register(request: Request, response: Response, next: NextFunction) {
-    const userData: UserDTO = request.body;
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
-    await this.userRepository
-      .save({
-        ...request.body,
-        password: hashedPassword,
-      })
-      .then((result) => {
-        result.password = null;
-        const tokenData = jwtToken.createToken(result);
-        response.setHeader('Set-Cookie', [jwtToken.createCookie(tokenData)]);
-        return response.status(200).send(result);
-      })
-      .catch((err) => {
-        if (err.code == 23502) {
-          return request.next(
-            new HttpException(
-              400,
-              `Integrity Constraint Violation: Property ${err.column} is null`
-            )
-          );
-        } else if (err.code == 23505) {
-          return request.next(
-            new HttpException(
-              400,
-              `Integrity Constraint Violation: Email already exists`
-            )
-          );
-        } else {
-          return request.next(new HttpException(500, err.detail));
         }
       });
   }

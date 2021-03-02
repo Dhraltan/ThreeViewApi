@@ -1,13 +1,13 @@
 import { User } from "../entities/User";
 import jwt from "jsonwebtoken";
-import { TokenData } from "../ViewModels/TokenData";
+import { TokenData } from "../interfaces/ViewModels/TokenData";
 
 export class jwtToken {
   public static createToken(user: User): TokenData {
     const expiresIn = 60 * 60; // an hour
     const secret = process.env.JWT_SECRET;
     const dataStoredInToken: DataStoredInToken = {
-      id: user.id.toString(),
+      email: user.email,
     };
     return {
       expiresIn,
