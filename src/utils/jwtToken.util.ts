@@ -16,6 +16,6 @@ export class jwtToken {
   }
 
   public static createCookie(tokenData: TokenData) {
-    return `Authorization=${tokenData.token}; HttpOnly; Path=/api; Max-Age=${tokenData.expiresIn}`;
+    return `Authorization=${tokenData.token}; HttpOnly; Path=/; Max-Age=${tokenData.expiresIn}`;
   }
 }
