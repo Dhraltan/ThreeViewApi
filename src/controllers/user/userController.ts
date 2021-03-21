@@ -12,7 +12,7 @@ export class UserController {
       .findOneOrFail({ where: { email: email } })
       .then((user) => {
         user.password = null;
-        return response.send(user);
+        return response.status(200).send(user);
       })
       .catch((err) => {
         if ((err.name = "EntityNotFound")) {

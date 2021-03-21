@@ -53,7 +53,7 @@ export class AuthController {
         result.password = null;
         const tokenData = jwtToken.createToken(result);
         response.setHeader("Set-Cookie", [jwtToken.createCookie(tokenData)]);
-        return response.status(200).send(result);
+        return response.sendStatus(204);
       })
       .catch((err) => {
         if (err.code == 23502) {
@@ -77,7 +77,7 @@ export class AuthController {
   }
 
   async logout(request: Request, response: Response, next: NextFunction) {
-    response.setHeader("Set-Cookie", ["Authorization=;Max-age=0;Path=/api"]);
-    response.sendStatus(200);
+    response.setHeader("Set-Cookie", ["Authorization='';Max-age=0;Path=/"]);
+    response.sendStatus(204);
   }
 }
