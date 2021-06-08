@@ -7,6 +7,7 @@ import { createConnection } from "typeorm";
 import { ormConfig } from "./ormconfig";
 import { userRouter } from "./routers/user.router";
 import { authRouter } from "./routers/auth.router";
+import { contactRouter } from "./routers/contact.router";
 
 const app = express();
 const port = process.env.SERVER_PORT;
@@ -26,6 +27,7 @@ async function init() {
 
   app.use(userRouter);
   app.use(authRouter);
+  app.use(contactRouter);
 
   app.use(errorMiddleware);
 }
