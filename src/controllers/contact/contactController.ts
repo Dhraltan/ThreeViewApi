@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import nodemailer from "nodemailer";
+import { ContactDTO } from "../../interfaces/DTOs/ContactDTO";
 
 export class ContactController {
   async sendEmail(request: Request, response: Response, next: NextFunction) {
@@ -12,7 +13,7 @@ export class ContactController {
       },
     });
 
-    const contactDTO = request.body;
+    const contactDTO: ContactDTO = request.body;
 
     await transporter
       .sendMail({
