@@ -8,6 +8,7 @@ import { ormConfig } from "./ormconfig";
 import { userRouter } from "./routers/user.router";
 import { authRouter } from "./routers/auth.router";
 import { contactRouter } from "./routers/contact.router";
+import { elasticRouter } from "./routers/elastic.router";
 
 const app = express();
 const port = process.env.SERVER_PORT;
@@ -26,9 +27,10 @@ async function init() {
   await app.listen(port);
 
   app.use(userRouter);
-  app.use(authRouter);
   app.use(contactRouter);
-
+  app.use(authRouter);
+  app.use(elasticRouter);
+  
   app.use(errorMiddleware);
 }
 
