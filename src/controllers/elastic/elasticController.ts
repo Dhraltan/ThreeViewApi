@@ -5,8 +5,8 @@ export class ElasticController {
   private client = new Client({
     node: "https://8f9677360fc34e2eb943d737b2597c7b.us-east-1.aws.found.io",
     auth: {
-      password: "AWbtmGda2Q7BI2bYpdjyF4qd",
-      username: "elastic",
+      password: process.env.ELASTIC_PASSWORD,
+      username: process.env.ELASTIC_USERNAME,
     },
   });
 
@@ -17,12 +17,16 @@ export class ElasticController {
   ) => {
     try {
       const res = await this.client.search({
-        index: "test.1_2021-06-03",
+        index: `aq1.2_${request.query.date}`,
         size: 1000
       });
       response.status(200).send(res.body);
     } catch (error) {
-      response.status(500).send(error);
+      if(error.meta?.statusCode){
+        response.status(error.meta.statusCode).send(error);
+      }else{
+        response.status(500).send(error);
+      }
     }
   };
 }

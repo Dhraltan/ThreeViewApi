@@ -51,8 +51,6 @@ export class AuthController {
       })
       .then((result) => {
         result.password = null;
-        const tokenData = jwtToken.createToken(result);
-        response.setHeader("Set-Cookie", [jwtToken.createCookie(tokenData)]);
         return response.sendStatus(204);
       })
       .catch((err) => {
