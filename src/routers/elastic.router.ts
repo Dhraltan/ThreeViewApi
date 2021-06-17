@@ -5,6 +5,6 @@ const elasticRouter = express.Router();
 const path = "/api/elastic";
 const contactController = new ElasticController();
 
-elasticRouter.get(`${path}`, contactController.getIndexInfo);
+elasticRouter.post(`${path}`, contactController.getIndexInfo);
 
 export { elasticRouter };

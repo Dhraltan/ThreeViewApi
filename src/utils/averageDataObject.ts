@@ -1,0 +1,15 @@
+export const averageDataObject = {
+  avg_temp: {avg: {field: "BME680.temperature[*C]"}},
+  avg_atm: {avg: {field: "BME680.atmospheric_pressure[hPa]"}},
+  avg_iaq: {avg: {field: "BME680.IAQ"}},
+  avg_bmetvoc: {avg: {field: "BME680.bTVOC[ppm]"}},
+  avg_bmeeco2: {avg: {field: "BME680.eCO2[ppm]"}},
+  avg_humidity: {avg: {field: "BME680.humidity[%]"}},
+  avg_siaq: {avg: {field: "BME680.sIAQ"}},
+  avg_ccseco2: {avg: {field: "CCS811.eCO2[ppm]"}},
+  avg_ccstvoc: {avg: {field: "CCS811.eTVOC[ppb]"}},
+  avg_pm1: {avg: {field: "ZH03B.PM1.0[ug/m3]"}},
+  "avg_pm2.5": {avg: {field: "ZH03B.PM2.5[ug/m3]"}},
+  avg_pm10: {avg: {field: "ZH03B.PM10[ug/m3]"}},
+  avg_vibrations: {avg: {field: "Vibration[ms]"}},
+};
