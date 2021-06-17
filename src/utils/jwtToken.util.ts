@@ -4,7 +4,7 @@ import { TokenData } from "../interfaces/ViewModels/TokenData";
 
 export class jwtToken {
   public static createToken(user: User): TokenData {
-    const expiresIn = 60 * 60; // an hour
+    const expiresIn = 60 * 60 * 24; // a day in seconds
     const secret = process.env.JWT_SECRET;
     const dataStoredInToken: DataStoredInToken = {
       email: user.email,

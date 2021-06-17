@@ -19,17 +19,14 @@ export class ElasticController {
     if (request.body.option == ElasticSearchOptions.LastMeasurement) {
       indexParameter = new Date().toISOString().split("T")[0];
     }
-    console.log(request.body);
     try {
       const res = await this.client.search({
         index: `aq1.2_${indexParameter}`,
         size: 1000,
         body: this.getElasticBody(request.body),
       });
-      console.log(res);
       response.status(200).send(this.getResponseBody(res.body, request.body.option as string));
     } catch (error) {
-      console.log(error);
       if (error.meta?.statusCode) {
         response.status(error.meta.statusCode).send(error);
       } else {
