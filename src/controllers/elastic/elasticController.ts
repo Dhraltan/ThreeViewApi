@@ -4,6 +4,7 @@ import {IndexDataPayload} from "../../interfaces/Payloads/IndexDataPayload";
 import {IndexDTO} from "../../interfaces/DTOs/IndexDTO";
 import {ElasticSearchOptions} from "../../utils/ElasticSearchOptions";
 import {averageDataObject} from "../../utils/averageDataObject";
+import {RoomEnum} from "../../utils/RoomEnum";
 
 export class ElasticController {
   private client = new Client({
@@ -15,13 +16,14 @@ export class ElasticController {
   });
 
   getIndexInfo = async (request: Request, response: Response, next: NextFunction) => {
-    let indexParameter: string = "*";
+    let indexDate: string = "*";
+    let indexRoom: string = request.body.room;
     if (request.body.option == ElasticSearchOptions.LastMeasurement) {
-      indexParameter = new Date().toISOString().split("T")[0];
+      indexDate = new Date().toISOString().split("T")[0];
     }
     try {
       const res = await this.client.search({
-        index: `aq1.2_${indexParameter}`,
+        index: `${indexRoom}_${indexDate}`,
         size: 1000,
         body: this.getElasticBody(request.body),
       });
